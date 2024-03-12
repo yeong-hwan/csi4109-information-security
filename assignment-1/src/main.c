@@ -74,7 +74,6 @@ int main(int argc, char *argv[])
 
         // Tokenize the line by space, tab, or newline
         token = strtok(line, delimiter);
-        // printf("%s\n", token);
 
         // End program at EOF
         if (token == NULL)
@@ -108,7 +107,7 @@ int main(int argc, char *argv[])
             for (int i = 0; i < key_count; i++)
             {
 
-                else if (strcmp(state.key, house.keys[i]) == 0)
+                if (strcmp(state.key, house.keys[i]) == 0)
                 {
                     printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
                     key_success = true;
@@ -131,12 +130,12 @@ int main(int argc, char *argv[])
 
             if (state.allowed)
             {
-                printf("%s", "ACCESS ALLOWED");
+                printf("%s\n", "ACCESS ALLOWED");
                 // user_name 추가 필요
             }
             else
             {
-                printf("%s", "ACCESS DENIED");
+                printf("%s\n", "ACCESS DENIED");
             }
         }
         else if (strcmp(token, "WHO'S") == 0)
