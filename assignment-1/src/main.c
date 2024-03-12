@@ -1,4 +1,5 @@
 #include "./utils.c"
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,7 +20,7 @@ typedef struct House
 
 typedef struct State
 {
-    char *user_name;
+    // char *user_name;
     char *key;
     bool allowed;
 } State;
@@ -55,7 +56,6 @@ int main(int argc, char *argv[])
     char delimiter[] = " \t\n"; // Delimiters (space, tab, newline)
 
     char *user_name;
-    char *key_now;
 
     int idx = 0;
 
@@ -84,25 +84,43 @@ int main(int argc, char *argv[])
 
         if (strcmp(token, "INSERT") == 0)
         { // pass "KEY" token
+            state.key = NULL;
+            state.allowed = false;
+
             token = strtok(NULL, delimiter);
             user_name = strtok(NULL, delimiter);
-            key_now = strtok(NULL, delimiter);
+            state.key = strtok(NULL, delimiter);
 
-            printf("KEY %s INSERTED BY %s\n", key_now, user_name);
+            printf("KEY %s INSERTED BY %s\n", state.key, user_name);
         }
         else if (strcmp(token, "TURN") == 0)
         { // pass "KEY" token
             token = strtok(NULL, delimiter);
             user_name = strtok(NULL, delimiter);
+            bool key_success = false;
+
+            if (state.key == NULL)
+            {
+                printf("FAILURE %s HAD NO KEY INSERTED\n", user_name);
+                break;
+            }
 
             for (int i = 0; i < key_count; i++)
             {
-                // printf("%s\n", house.keys[i]);
-                if (strcmp(key_now, house.keys[i]) == 0)
+
+                else if (strcmp(state.key, house.keys[i]) == 0)
                 {
-                    printf("SUCCESS %s TURNS KEY %s\n", user_name, key_now);
+                    printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
+                    key_success = true;
+                    state.allowed = true;
                     break;
                 }
+            }
+
+            if (!key_success)
+            {
+                printf("FAILURE %s HAD INVALID KEY %s INSERTED\n", user_name, state.key);
+                state.allowed = false;
             }
         }
         else if (strcmp(token, "ENTER") == 0)
@@ -110,6 +128,16 @@ int main(int argc, char *argv[])
             token = strtok(NULL, delimiter);
 
             user_name = strtok(NULL, delimiter);
+
+            if (state.allowed)
+            {
+                printf("%s", "ACCESS ALLOWED");
+                // user_name 추가 필요
+            }
+            else
+            {
+                printf("%s", "ACCESS DENIED");
+            }
         }
         else if (strcmp(token, "WHO'S") == 0)
         { // pass "INSIDE?" token
