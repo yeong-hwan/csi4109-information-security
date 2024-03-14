@@ -90,10 +90,6 @@ int main(int argc, char *argv[])
         if (line[linelen - 1] == '\n')
             line[linelen - 1] = '\0';
 
-        // Print the line
-        // printf("\n%d. ", idx);
-        // printf("%s\n", line);
-
         // Tokenize the line by space, tab, or newline
         token = strtok(line, delimiter);
 

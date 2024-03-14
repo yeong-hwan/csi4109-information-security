@@ -1,1 +1,147 @@
 # assignment-1
+
+2019145019 장영환
+
+## Structure
+- struct
+  - House
+    - *owner_name
+    - **keys
+    - Node *head (Linked List for handle entered users)
+  - State
+    - *key (latest inserted key)
+    - allowed (bool)
+    - Node *key_head (Linked List for handle rekey command)
+
+- main
+  - exception for argument usage
+    <div align="center">
+      <img src="imgs/exception.png" alt="drawing" width=600"/>
+    </div>
+  
+  - key setting
+    <div align="center">
+      <img src="imgs/key_setting.png" alt="drawing" width=500"/>
+    </div>
+
+  - read each line until EOF and case division by token
+    <div align="center">
+      <img src="imgs/read_line.png" alt="drawing" width=500"/>
+    </div>
+
+  - insert
+    - reset state about key & allowed.
+    ```c
+    if (strcmp(token, "INSERT") == 0)
+    { // pass "KEY" token
+        token = strtok(NULL, delimiter);
+
+        if (token == NULL)
+        {
+            printf("%s\n", "ERROR");
+            break;
+        }
+
+        state.key = NULL;
+        state.allowed = false;
+        user_name = strtok(NULL, delimiter);
+        state.key = strtok(NULL, delimiter);
+
+        if (user_name == NULL || state.key == NULL)
+        {
+            printf("%s\n", "ERROR");
+            break;
+        }
+
+        printf("KEY %s INSERTED BY %s\n", state.key, user_name);
+    }
+    ```
+  
+  - turn
+    - validation for turn key. (+fire fighter key exception handling)
+    ```c
+    else if (strcmp(token, "TURN") == 0)
+    { // pass "KEY" token
+        token = strtok(NULL, delimiter);
+
+        if (token == NULL)
+        {
+            printf("%s\n", "ERROR");
+            break;
+        }
+
+        user_name = strtok(NULL, delimiter);
+        bool key_success = false;
+
+        if (user_name == NULL)
+        {
+            printf("%s\n", "ERROR");
+            break;
+        }
+
+        if (state.key == NULL)
+        {
+            printf("FAILURE %s HAD NO KEY INSERTED\n", user_name);
+            break;
+        }
+
+        for (int i = 0; i < key_count; i++)
+        {
+            if (strcmp(state.key, house.keys[i]) == 0)
+            {
+                printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
+                key_success = true;
+                state.allowed = true;
+                break;
+            }
+        }
+
+        if (strcmp(state.key, "FIREFIGHTER_SECRET_KEY") == 0)
+        {
+            printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
+            key_success = true;
+            state.allowed = true;
+            break;
+        }
+
+        if (!key_success)
+        {
+            printf("FAILURE %s HAD INVALID KEY %s INSERTED\n", user_name, state.key);
+            state.allowed = false;
+        }
+    }
+    ```
+
+  - enter
+    - put user on list if state is allowed.
+    ```c
+    else if (strcmp(token, "ENTER") == 0)
+    { // pass "HOUSE" token
+        token = strtok(NULL, delimiter);
+
+        if (token == NULL)
+        {
+            printf("%s\n", "ERROR");
+            break;
+        }
+
+        user_name = strtok(NULL, delimiter);
+
+        if (user_name == NULL)
+        {
+            printf("%s\n", "ERROR");
+            break;
+        }
+
+        if (state.allowed)
+        {
+            printf("%s\n", "ACCESS ALLOWED");
+
+            insertAtLast(&house.head, user_name);
+        }
+        else
+        {
+            printf("%s\n", "ACCESS DENIED");
+        }
+    }
+    ```
