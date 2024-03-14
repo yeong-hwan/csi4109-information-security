@@ -102,20 +102,45 @@ int main(int argc, char *argv[])
 
         if (strcmp(token, "INSERT") == 0)
         { // pass "KEY" token
+            token = strtok(NULL, delimiter);
+
+            if (token == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
+
             state.key = NULL;
             state.allowed = false;
-
-            token = strtok(NULL, delimiter);
             user_name = strtok(NULL, delimiter);
             state.key = strtok(NULL, delimiter);
+
+            if (user_name == NULL || state.key == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
 
             printf("KEY %s INSERTED BY %s\n", state.key, user_name);
         }
         else if (strcmp(token, "TURN") == 0)
         { // pass "KEY" token
             token = strtok(NULL, delimiter);
+
+            if (token == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
+
             user_name = strtok(NULL, delimiter);
             bool key_success = false;
+
+            if (user_name == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
 
             if (state.key == NULL)
             {
@@ -134,11 +159,12 @@ int main(int argc, char *argv[])
                 }
             }
 
-            if (state.key == "FIREFIGHTER_SECRET_KEY")
+            if (strcmp(state.key, "FIREFIGHTER_SECRET_KEY") == 0)
             {
                 printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
                 key_success = true;
                 state.allowed = true;
+                break;
             }
 
             if (!key_success)
@@ -151,7 +177,19 @@ int main(int argc, char *argv[])
         { // pass "HOUSE" token
             token = strtok(NULL, delimiter);
 
+            if (token == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
+
             user_name = strtok(NULL, delimiter);
+
+            if (user_name == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
 
             if (state.allowed)
             {
@@ -168,6 +206,12 @@ int main(int argc, char *argv[])
         { // pass "INSIDE?" token
             token = strtok(NULL, delimiter);
 
+            if (token == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
+
             int list_length = lengthOfList(house.head);
             if (list_length == 1)
             {
@@ -182,7 +226,19 @@ int main(int argc, char *argv[])
         { // pass "LOCKS" token
             token = strtok(NULL, delimiter);
 
+            if (token == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
+
             user_name = strtok(NULL, delimiter);
+
+            if (user_name == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
 
             while (token != NULL)
             {
@@ -196,7 +252,19 @@ int main(int argc, char *argv[])
         { // pass "HOUSE" token
             token = strtok(NULL, delimiter);
 
+            if (token == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
+
             user_name = strtok(NULL, delimiter);
+
+            if (user_name == NULL)
+            {
+                printf("%s", "ERROR");
+                break;
+            }
 
             int is_in_house = checkNode(house.head, user_name);
 
@@ -209,6 +277,10 @@ int main(int argc, char *argv[])
             {
                 printf("%s NOT HERE", user_name);
             }
+        }
+        else
+        {
+            printf("%s", "ERROR");
         }
 
         // printf("user_name: %s\n", user_name);
