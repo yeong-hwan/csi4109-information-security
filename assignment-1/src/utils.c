@@ -65,7 +65,7 @@ void printList(struct Node *head)
 
     while (temp->next != NULL)
     {
-        printf("%s ", temp->data);
+        printf("%s, ", temp->data);
         temp = temp->next;
     }
     printf("%s", temp->data);

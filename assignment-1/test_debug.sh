@@ -55,6 +55,7 @@ TURN KEY pat
 ENTER HOUSE pat
 ENTER HOUSE pat2
 ENTER HOUSE pat3
+CHANGE LOCKS selina key4 key5
 ENTER HOUSE pat4
 WHO'S INSIDE?
 
@@ -68,8 +69,8 @@ SUCCESS pat TURNS KEY foobar
 ACCESS ALLOWED
 ACCESS ALLOWED
 ACCESS ALLOWED
-ACCESS ALLOWED
-pat pat2 pat3 pat4
+ACCESS DENIED
+pat, pat2, pat3
 "
 
 echo "Testing your program"

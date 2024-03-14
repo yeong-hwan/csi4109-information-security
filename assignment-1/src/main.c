@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
 
             if (token == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
 
             if (user_name == NULL || state.key == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 
             if (token == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
             if (user_name == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 
             if (token == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 
             if (user_name == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -208,14 +208,14 @@ int main(int argc, char *argv[])
 
             if (token == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
             int list_length = lengthOfList(house.head);
             if (list_length == 1)
             {
-                printf("%s", "NOBODY HOME");
+                printf("%s\n", "NOBODY HOME");
             }
             else
             {
@@ -228,7 +228,7 @@ int main(int argc, char *argv[])
 
             if (token == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -236,16 +236,30 @@ int main(int argc, char *argv[])
 
             if (user_name == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
-            while (token != NULL)
+            if (strcmp(house.owner_name, user_name) == 0)
             {
-                // Print each token
-                printf("%s\n", token);
-                // Get the next token
-                token = strtok(NULL, delimiter);
+                printf("%s\n", "LOCK CHANGED");
+
+                // struct Node *head;
+                // head->data = "HEAD";
+                // head->next = NULL;
+
+                // while (token != NULL)
+                // {
+                //     // Get the next token(key)
+                //     token = strtok(NULL, delimiter);
+                //     insertAtLast(&head, token);
+                // }
+
+                // printList(head);
+            }
+            else
+            {
+                printf("%s\n", "LOCK CHANGE DENIED ");
             }
         }
         else if (strcmp(token, "LEAVE") == 0)
@@ -254,7 +268,7 @@ int main(int argc, char *argv[])
 
             if (token == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -262,7 +276,7 @@ int main(int argc, char *argv[])
 
             if (user_name == NULL)
             {
-                printf("%s", "ERROR");
+                printf("%s\n", "ERROR");
                 break;
             }
 
@@ -270,17 +284,17 @@ int main(int argc, char *argv[])
 
             if (is_in_house)
             {
-                printf("%s LEFT", user_name);
+                printf("%s LEFT\n", user_name);
                 deleteNodes(&house.head, user_name);
             }
             else
             {
-                printf("%s NOT HERE", user_name);
+                printf("%s NOT HERE\n", user_name);
             }
         }
         else
         {
-            printf("%s", "ERROR");
+            printf("%s\n", "ERROR");
         }
 
         // printf("user_name: %s\n", user_name);
