@@ -138,14 +138,54 @@ int lengthOfList(struct Node *head)
 }
 
 // Function to free the memory allocated for the linked list
-// void freeList(struct Node *head)
-// {
-//     struct Node *temp;
-//     while (head != NULL)
-//     {
-//         temp = head;
-//         head = head->next;
-//         free(temp->data); // Free the memory allocated for the string
-//         free(temp);
-//     }
-// }
+void freeList(struct Node *head)
+{
+    struct Node *temp;
+    while (head != NULL)
+    {
+        temp = head;
+        head = head->next;
+        free(temp->data); // Free the memory allocated for the string
+        free(temp);
+    }
+}
+
+// Function to remove the last node from the linked list and return its data
+char *popFromLast(struct Node **head)
+{
+    if (*head == NULL)
+    {
+        printf("Linked list is empty. Cannot pop.\n");
+        return NULL;
+    }
+
+    struct Node *current = *head;
+    struct Node *prev = NULL;
+
+    // Traverse the list until the second-to-last node
+    while (current->next != NULL)
+    {
+        prev = current;
+        current = current->next;
+    }
+
+    char *poppedData;
+
+    // If there's only one node in the list
+    if (prev == NULL)
+    {
+        poppedData = strdup(current->data);
+        free(current->data); // Free the memory allocated for the string
+        free(current);       // Free the memory allocated for the node
+        *head = NULL;        // Update the head pointer to NULL
+    }
+    else
+    {
+        poppedData = strdup(current->data);
+        prev->next = NULL;   // Remove the last node from the list
+        free(current->data); // Free the memory allocated for the string
+        free(current);       // Free the memory allocated for the node
+    }
+
+    return poppedData;
+}

@@ -20,6 +20,9 @@ typedef struct State
 {
     char *key;
     bool allowed;
+
+    // new keys
+    struct Node *key_head;
 } State;
 
 int main(int argc, char *argv[])
@@ -244,22 +247,42 @@ int main(int argc, char *argv[])
             {
                 printf("%s\n", "LOCK CHANGED");
 
-                // struct Node *head;
-                // head->data = "HEAD";
-                // head->next = NULL;
+                state.key_head->data = "HEAD";
+                state.key_head->next = NULL;
 
-                // while (token != NULL)
-                // {
-                //     // Get the next token(key)
-                //     token = strtok(NULL, delimiter);
-                //     insertAtLast(&head, token);
-                // }
+                token = strtok(NULL, delimiter);
 
-                // printList(head);
+                if (user_name == NULL)
+                {
+                    printf("%s\n", "ERROR");
+                    break;
+                }
+
+                while (token != NULL)
+                {
+                    insertAtLast(&state.key_head, token);
+                    // Get the next token(key)
+                    token = strtok(NULL, delimiter);
+                }
+
+                key_count = lengthOfList(state.key_head) - 1;
+
+                house.keys = malloc(sizeof(char *) * key_count + 1);
+                house.keys[key_count] = 0;
+
+                for (int i = 0; i < key_count; i++)
+                {
+                    char *key = &*popFromLast(&state.key_head);
+                    house.keys[i] = key;
+                }
+
+                state.allowed = false;
+                // freeList(state.key_head);
             }
             else
             {
                 printf("%s\n", "LOCK CHANGE DENIED ");
+                break;
             }
         }
         else if (strcmp(token, "LEAVE") == 0)
@@ -296,8 +319,6 @@ int main(int argc, char *argv[])
         {
             printf("%s\n", "ERROR");
         }
-
-        // printf("user_name: %s\n", user_name);
     }
 
     // Free the memory allocated for the line
