@@ -53,6 +53,9 @@ ENTER HOUSE david
 INSERT KEY pat foobar
 TURN KEY pat
 ENTER HOUSE pat
+ENTER HOUSE pat2
+ENTER HOUSE pat3
+ENTER HOUSE pat4
 WHO'S INSIDE?
 
 "
@@ -63,7 +66,10 @@ ACCESS DENIED
 KEY foobar INSERTED BY pat
 SUCCESS pat TURNS KEY foobar
 ACCESS ALLOWED
-pat
+ACCESS ALLOWED
+ACCESS ALLOWED
+ACCESS ALLOWED
+pat pat2 pat3 pat4
 "
 
 echo "Testing your program"

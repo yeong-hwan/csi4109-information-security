@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Define the structure for a node in the linked list
 struct Node
 {
-    int data;
+    char *data;
     struct Node *next;
 };
 
 // Function to create a new node with given data
-struct Node *createNode(int data)
+struct Node *createNode(const char *data)
 {
     struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
     if (newNode == NULL)
@@ -17,110 +18,134 @@ struct Node *createNode(int data)
         printf("Memory allocation failed!\n");
         exit(1);
     }
-    newNode->data = data;
+    newNode->data = strdup(data);
     newNode->next = NULL;
     return newNode;
 }
 
 // Function to insert a new node at the beginning of the linked list
-void insertAtBeginning(struct Node **head, int data)
-{
-    struct Node *newNode = createNode(data);
-    newNode->next = *head;
-    *head = newNode;
-}
+// void insertAtBeginning(struct Node **head, const char *data)
+// {
+//     struct Node *newNode = createNode(data);
+//     newNode->next = *head;
+//     *head = newNode;
+// }
 
 // Function to insert a new node at the end of the linked list
-void insertAtEnd(struct Node **head, int data)
+void insertAtLast(struct Node **head, const char *data)
 {
     struct Node *newNode = createNode(data);
+
     if (*head == NULL)
     {
+        // If the list is empty, make the new node the head node
         *head = newNode;
-        return;
     }
-    struct Node *temp = *head;
-    while (temp->next != NULL)
+    else
     {
-        temp = temp->next;
+        // Traverse the list to find the last node
+        struct Node *current = *head;
+        while (current->next != NULL)
+        {
+            current = current->next;
+        }
+        // Insert the new node after the last node
+        current->next = newNode;
     }
-    temp->next = newNode;
-}
-
-// Function to delete a node with a given data value from the linked list
-void deleteNode(struct Node **head, int key)
-{
-    struct Node *temp = *head;
-    struct Node *prev = NULL;
-
-    // If the key is found at the head
-    if (temp != NULL && temp->data == key)
-    {
-        *head = temp->next;
-        free(temp);
-        return;
-    }
-
-    // Traverse the list to find the key
-    while (temp != NULL && temp->data != key)
-    {
-        prev = temp;
-        temp = temp->next;
-    }
-
-    // If the key is not found
-    if (temp == NULL)
-    {
-        printf("Key not found in the list.\n");
-        return;
-    }
-
-    // Delete the node with the key
-    prev->next = temp->next;
-    free(temp);
 }
 
 // Function to print the linked list
 void printList(struct Node *head)
 {
     struct Node *temp = head;
-    while (temp != NULL)
+    if (temp->next != NULL)
     {
-        printf("%d -> ", temp->data);
         temp = temp->next;
     }
-    printf("NULL\n");
+
+    while (temp->next != NULL)
+    {
+        printf("%s ", temp->data);
+        temp = temp->next;
+    }
+    printf("%s", temp->data);
+    printf("\n");
+}
+
+// Function to check if a node with a specific data value exists in the linked list
+int checkNode(struct Node *head, const char *data)
+{
+    struct Node *current = head;
+
+    // Traverse the list and search for the node with the specified data value
+    while (current != NULL)
+    {
+        if (strcmp(current->data, data) == 0)
+        {
+            return 1; // Node with the specified data value found
+        }
+        current = current->next;
+    }
+
+    return 0; // Node with the specified data value not found
+}
+
+// Function to delete all nodes with a specific data value from the linked list
+void deleteNodes(struct Node **head, const char *data)
+{
+    struct Node *current = *head;
+    struct Node *prev = NULL;
+
+    // Traverse the list and delete all nodes with the specified data value
+    while (current != NULL)
+    {
+        if (strcmp(current->data, data) == 0)
+        {
+            if (prev == NULL)
+            {
+                *head = current->next;
+            }
+            else
+            {
+                prev->next = current->next;
+            }
+            struct Node *temp = current;
+            current = current->next;
+            free(temp->data); // Free the memory allocated for the string
+            free(temp);       // Free the memory allocated for the node
+        }
+        else
+        {
+            prev = current;
+            current = current->next;
+        }
+    }
+}
+
+int lengthOfList(struct Node *head)
+{
+    int length = 0;
+    struct Node *current = head;
+
+    // Traverse the list and count the number of nodes
+    while (current != NULL)
+    {
+        length++;
+        current = current->next;
+    }
+
+    return length;
 }
 
 // Function to free the memory allocated for the linked list
-void freeList(struct Node *head)
-{
-    struct Node *temp;
-    while (head != NULL)
-    {
-        temp = head;
-        head = head->next;
-        free(temp);
-    }
-}
-
-// int ()
+// void freeList(struct Node *head)
 // {
-//     struct Node *head = NULL;
-
-//     // Inserting elements into the linked list
-//     insertAtBeginning(&head, 3);
-//     insertAtBeginning(&head, 2);
-//     insertAtBeginning(&head, 1);
-//     insertAtEnd(&head, 4);
-//     insertAtEnd(&head, 5);
-
-//     // Printing the linked list
-//     printf("Linked list: ");
-//     printList(head);
-
-//     // Freeing the memory allocated for the linked list
-//     freeList(head);
-
-//     return 0;
+//     struct Node *temp;
+//     while (head != NULL)
+//     {
+//         temp = head;
+//         head = head->next;
+//         free(temp->data); // Free the memory allocated for the string
+//         free(temp);
+//     }
 // }

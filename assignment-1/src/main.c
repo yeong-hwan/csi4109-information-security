@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// #define MAX_OWNER_NAME_LENGTH 100000
-
 typedef struct House
 {
     struct House *this;
@@ -20,7 +18,6 @@ typedef struct House
 
 typedef struct State
 {
-    // char *user_name;
     char *key;
     bool allowed;
 } State;
@@ -38,6 +35,30 @@ int main(int argc, char *argv[])
     State state;
     house.owner_name = argv[1];
 
+    // Linked List Test ----------------------------
+    house.head->data = "HEAD";
+    house.head->next = NULL;
+    // printList(house.head);
+
+    // insertAtLast(&house.head, "test2");
+    // insertAtLast(&house.head, "test3");
+    // insertAtLast(&house.head, "test4");
+
+    // printList(house.head);
+
+    // printf("%d\n", checkNode(house.head, "test2"));
+    // printf("%d\n", checkNode(house.head, "test5"));
+
+    // deleteNodes(&house.head, "test2");
+
+    // printList(house.head);
+
+    // printf("%d\n", lengthOfList(house.head));
+
+    // printf("%s", house.head->data);
+
+    // Linked List Test ----------------------------
+
     int key_count = argc - 2;
     house.keys = malloc(sizeof(char *) * key_count + 1);
     house.keys[key_count] = 0;
@@ -46,8 +67,6 @@ int main(int argc, char *argv[])
     {
         house.keys[i] = argv[i + 2];
     }
-
-    house.head = NULL;
 
     char *line = NULL;          // Pointer to hold the line
     size_t bufsize = 0;         // Size of the buffer
@@ -69,8 +88,8 @@ int main(int argc, char *argv[])
             line[linelen - 1] = '\0';
 
         // Print the line
-        printf("\n%d. ", idx);
-        printf("%s\n", line);
+        // printf("\n%d. ", idx);
+        // printf("%s\n", line);
 
         // Tokenize the line by space, tab, or newline
         token = strtok(line, delimiter);
@@ -106,7 +125,6 @@ int main(int argc, char *argv[])
 
             for (int i = 0; i < key_count; i++)
             {
-
                 if (strcmp(state.key, house.keys[i]) == 0)
                 {
                     printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
@@ -114,6 +132,13 @@ int main(int argc, char *argv[])
                     state.allowed = true;
                     break;
                 }
+            }
+
+            if (state.key == "FIREFIGHTER_SECRET_KEY")
+            {
+                printf("SUCCESS %s TURNS KEY %s\n", user_name, state.key);
+                key_success = true;
+                state.allowed = true;
             }
 
             if (!key_success)
@@ -131,7 +156,8 @@ int main(int argc, char *argv[])
             if (state.allowed)
             {
                 printf("%s\n", "ACCESS ALLOWED");
-                // user_name 추가 필요
+
+                insertAtLast(&house.head, user_name);
             }
             else
             {
@@ -141,6 +167,16 @@ int main(int argc, char *argv[])
         else if (strcmp(token, "WHO'S") == 0)
         { // pass "INSIDE?" token
             token = strtok(NULL, delimiter);
+
+            int list_length = lengthOfList(house.head);
+            if (list_length == 1)
+            {
+                printf("%s", "NOBODY HOME");
+            }
+            else
+            {
+                printList(house.head);
+            }
         }
         else if (strcmp(token, "CHANGE") == 0)
         { // pass "LOCKS" token
@@ -161,6 +197,18 @@ int main(int argc, char *argv[])
             token = strtok(NULL, delimiter);
 
             user_name = strtok(NULL, delimiter);
+
+            int is_in_house = checkNode(house.head, user_name);
+
+            if (is_in_house)
+            {
+                printf("%s LEFT", user_name);
+                deleteNodes(&house.head, user_name);
+            }
+            else
+            {
+                printf("%s NOT HERE", user_name);
+            }
         }
 
         // printf("user_name: %s\n", user_name);
