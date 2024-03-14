@@ -4,31 +4,68 @@ assignment-1
 I. Struct Fields
 
   House:
-    *owner_name: char
-    **keys: char
-    *head: Node      // (Linked List for handle entered users)
+    owner_name: char
+    keys: char        // authorized keys
+    head: Node        // username list (Linked List)
   State:
-    *key: char       // (latest inserted key)
-    allowed: bool
-    *key_head: Node  // (Linked List for handle rekey command)
+    key: char         // latest inserted key
+    allowed: bool     // latest allowed info
+    key_head: Node    // rekey list (Linked List)
 
   House는 초기 입력 정보 및 실내 인원 관리를,
   State는 최신 inserted key와 문 개방 정보 등 동적 정보를 관리합니다.
 
 II. Code Structures
-  - exception for argument usage
-  
-  - key setting
+  1. exception for argument usage
+  2. key setting
+  3. main loop: read each line until EOF
+     
+     [ case division ]
 
-  - read each line until EOF and case division by token
+     i. INSERT KEY <user_name> <key>
+        reset state about key & allowed.
+        
+        State:
+          user_name: <user_name>
+          key: <key>
+          allowed: false
+      
+      ii. TURN KEY <user_name>
+          validation for turn key.
+          (+fire fighter key exception handling)
 
-  - insert
-    - reset state about key & allowed.
-    
-  
-  - turn
-    - validation for turn key. (+fire fighter key exception handling)
+          State:
+            user_name: <user_name>
+            key: <key>
+            allowed: true
+        
+      iii. ENTER HOUSE <user_name>
+           put user on list if state is allowed.
 
-  - enter
-    - put user on list if state is allowed.
+           House:
+             head(username list): append(<user_name>)
+      
+      iv. WHO'S INSIDE?
+          print user list in house using iteration.
+
+          House:
+            head(username list): search(<user_name>)
+
+      v. CHANGE LOCKS <user_name> <key> ...
+          rekey if user_name is owner_name
+
+          State:
+            key_head(rekey list)
+          House:
+            keys <- rekey list
+
+      vi. LEAVE HOUSE
+         delete certain user in userlist using iteration searching
+
+         House:
+            head(username list): delete(<user_name>)
+
+      *. ERROR
+         print ERROR when invalid command input or token.
+
    
