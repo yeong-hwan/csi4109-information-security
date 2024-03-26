@@ -1,7 +1,7 @@
 CC = gcc
 
 build:
-		$(CC) src/main.c -o secure_house
+		$(CC) src/main.c -o mac
 all:
 		build
 clean :

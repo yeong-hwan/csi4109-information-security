@@ -5,3 +5,7 @@
 .vscode
 
 /test
+
+*.zip
+
+*.policy
