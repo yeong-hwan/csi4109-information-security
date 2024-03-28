@@ -4,5 +4,6 @@ Assignment 2 - MAC
 I set security level 'unclassifed' to 'top_secret' -> 0 to 3 respectively.
 and store pair with 'username':'security level' at struct by reading mac.policy.
 
-First, branch out based on the file you want to read.
-After that, I chose to branch out read and write once more to check the user's level and decide whether to allow or reject.
+First, branch out based on the file's name to check.
+After that, branch out read and write once more to check the user's level
+Lastly, decide whether to allow or reject by comparing user level and docs level.
