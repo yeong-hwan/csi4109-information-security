@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #define MAX_USERNAME_LENGTH 256
 #define MAX_FILENAME_LENGTH 256
@@ -30,8 +32,14 @@ UserPermission *get_user_permission(int uid)
     char line[MAX_POLICY_LENGTH];
     while (fgets(line, sizeof(line), policy_file) != NULL)
     {
+        char delimiter[] = " \t\n";
         char *username = strtok(line, ":");
-        char *permission_str = strtok(NULL, ":");
+        char *permission_str = strtok(NULL, "\n");
+        
+
+        printf("%s\n", username);
+        printf("%s\n", permission_str);
+
         int permission = -1;
 
         if (strcmp(permission_str, "UNCLASSIFIED") == 0)
@@ -51,6 +59,8 @@ UserPermission *get_user_permission(int uid)
             permission = 3;
         }
 
+        printf("permission : %d\n\n", permission);
+
         if (permission != -1)
         {
             UserPermission user_permission;
@@ -61,6 +71,7 @@ UserPermission *get_user_permission(int uid)
     }
 
     fclose(policy_file);
+
     return permissions;
 }
 
@@ -78,14 +89,27 @@ int main(int argc, char *argv[])
     int uid = getuid();
     UserPermission *user_permissions = get_user_permission(uid);
 
-    int num_user_permissions = sizeof(*user_permissions) / sizeof(UserPermission);
+    int num_user_permissions = sizeof(*user_permissions);
     int user_permission = -1;
+
+    printf("%lu\n", sizeof(UserPermission));
+    printf("%d\n", num_user_permissions);
+
+    char  *current_username;
+    struct passwd *user_pw;
+
+    user_pw = getpwuid(uid); // get user info using uid
+    current_username = user_pw->pw_name;
 
     for (int i = 0; i < num_user_permissions; i++)
     {
-        if (strcmp(user_permissions[i].username, getlogin()) == 0)
+        // get login = root 
+        printf("%d | user_permission : %s\n", i, user_permissions[i].username);
+
+        if (strcmp(user_permissions[i].username, current_username) == 0)
         {
             user_permission = user_permissions[i].permission;
+            // printf("%d\n", user_permission); 
             break;
         }
     }
@@ -102,7 +126,7 @@ int main(int argc, char *argv[])
         FILE *file = fopen(filename, "r");
         if (file == NULL)
         {
-            perror("Error opening unclassified.data");
+            // perror("Error opening unclassified.data");
             exit(1);
         }
         fgets(contents, sizeof(contents), file);
@@ -115,7 +139,7 @@ int main(int argc, char *argv[])
             FILE *file = fopen(filename, "r");
             if (file == NULL)
             {
-                perror("Error opening confidential.data");
+                // perror("Error opening confidential.data");
                 exit(1);
             }
             fgets(contents, sizeof(contents), file);
@@ -133,7 +157,7 @@ int main(int argc, char *argv[])
             FILE *file = fopen(filename, "r");
             if (file == NULL)
             {
-                perror("Error opening secret.data");
+                // perror("Error opening secret.data");
                 exit(1);
             }
             fgets(contents, sizeof(contents), file);
@@ -151,10 +175,11 @@ int main(int argc, char *argv[])
             FILE *file = fopen(filename, "r");
             if (file == NULL)
             {
-                perror("Error opening top_secret.data");
+                // perror("Error opening top_secret.data");
                 exit(1);
             }
-            fgets(contents, sizeof(contents), file);
+            char* content = fgets(contents, sizeof(contents), file);
+            printf("%s\n", content);
             fclose(file);
         }
         else
@@ -172,10 +197,10 @@ int main(int argc, char *argv[])
     setegid(getgid());
 
     // logging and printing
-    int log_file = open(strcat(getlogin(), ".log"), O_WRONLY | O_APPEND | O_CREAT, 0640);
+    int log_file = open(strcat(current_username, ".log"), O_WRONLY | O_APPEND | O_CREAT, 0640);
     if (log_file == -1)
     {
-        perror("Error opening log file");
+        // Error opening log file
         exit(1);
     }
 
