@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <stdbool.h>
 
 #define MAX_USERNAME_LENGTH 256
 #define MAX_FILENAME_LENGTH 256
@@ -22,7 +23,7 @@ UserPermission *get_user_permission(int uid)
     FILE *policy_file = fopen("mac.policy", "r");
     if (policy_file == NULL)
     {
-        perror("Error opening mac.policy");
+        // perror("Error opening mac.policy");
         exit(1);
     }
 
@@ -32,13 +33,12 @@ UserPermission *get_user_permission(int uid)
     char line[MAX_POLICY_LENGTH];
     while (fgets(line, sizeof(line), policy_file) != NULL)
     {
-        char delimiter[] = " \t\n";
         char *username = strtok(line, ":");
         char *permission_str = strtok(NULL, "\n");
         
 
-        printf("%s\n", username);
-        printf("%s\n", permission_str);
+        // printf("%s\n", username);
+        // printf("%s\n", permission_str);
 
         int permission = -1;
 
@@ -59,7 +59,7 @@ UserPermission *get_user_permission(int uid)
             permission = 3;
         }
 
-        printf("permission : %d\n\n", permission);
+        // printf("permission : %d\n\n", permission);
 
         if (permission != -1)
         {
@@ -77,14 +77,19 @@ UserPermission *get_user_permission(int uid)
 
 int main(int argc, char *argv[])
 {
-    if (argc < 3 || strcmp(argv[1], "read") != 0)
-    {
-        printf("Invalid command! Usage: ./mac read <document file>\n");
-        exit(1);
-    }
 
     char *subcommand = argv[1];
     char *filename = argv[2];
+    char *file_content;
+
+
+    if (strcmp(argv[1], "read") != 0)
+    {
+        file_content = argv[3];
+    }
+
+    bool write_flag = false;
+
 
     int uid = getuid();
     UserPermission *user_permissions = get_user_permission(uid);
@@ -92,8 +97,8 @@ int main(int argc, char *argv[])
     int num_user_permissions = sizeof(*user_permissions);
     int user_permission = -1;
 
-    printf("%lu\n", sizeof(UserPermission));
-    printf("%d\n", num_user_permissions);
+    // printf("%lu\n", sizeof(UserPermission));
+    // printf("%d\n", num_user_permissions);
 
     char  *current_username;
     struct passwd *user_pw;
@@ -104,7 +109,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < num_user_permissions; i++)
     {
         // get login = root 
-        printf("%d | user_permission : %s\n", i, user_permissions[i].username);
+        // printf("%d | user_permission : %s\n", i, user_permissions[i].username);
 
         if (strcmp(user_permissions[i].username, current_username) == 0)
         {
@@ -123,68 +128,120 @@ int main(int argc, char *argv[])
     char contents[1024];
     if (strcmp(filename, "unclassified.data") == 0)
     {
-        FILE *file = fopen(filename, "r");
-        if (file == NULL)
-        {
-            // perror("Error opening unclassified.data");
-            exit(1);
+        if (strcmp(subcommand, "read") == 0) {
+            FILE *file = fopen(filename, "r");
+            if (file == NULL)
+            {
+                // perror("Error opening unclassified.data");
+                exit(1);
+            }
+            fgets(contents, sizeof(contents), file);
+            fclose(file);
         }
-        fgets(contents, sizeof(contents), file);
-        fclose(file);
+        else if (strcmp(subcommand, "write") == 0)
+        {
+            if (user_permission > 0) {
+                strcpy(contents, "ACCESS DENIED");
+            }
+            else
+            {
+                write_flag = true;
+            }
+        }
     }
     else if (strcmp(filename, "confidential.data") == 0)
     {
-        if (user_permission >= 1)
+        if (strcmp(subcommand, "read") == 0)
         {
-            FILE *file = fopen(filename, "r");
-            if (file == NULL)
-            {
-                // perror("Error opening confidential.data");
-                exit(1);
+            if (user_permission >= 1)
+                {
+                    FILE *file = fopen(filename, "r");
+                    if (file == NULL)
+                    {
+                        // perror("Error opening confidential.data");
+                        exit(1);
+                    }
+                    fgets(contents, sizeof(contents), file);
+                    fclose(file);
+                }
+                else
+                {
+                    strcpy(contents, "ACCESS DENIED");
+                }
+        }
+        else if (strcmp(subcommand, "write") == 0)
+        {
+            if (user_permission > 1) {
+                strcpy(contents, "ACCESS DENIED");
             }
-            fgets(contents, sizeof(contents), file);
-            fclose(file);
+            else
+            {
+                write_flag = true;
+            }
         }
-        else
-        {
-            strcpy(contents, "ACCESS DENIED");
-        }
+        
     }
     else if (strcmp(filename, "secret.data") == 0)
     {
-        if (user_permission >= 2)
+        if (strcmp(subcommand, "read") == 0)
         {
-            FILE *file = fopen(filename, "r");
-            if (file == NULL)
+            if (user_permission >= 2)
             {
-                // perror("Error opening secret.data");
-                exit(1);
+                FILE *file = fopen(filename, "r");
+                if (file == NULL)
+                {
+                    // perror("Error opening secret.data");
+                    exit(1);
+                }
+                fgets(contents, sizeof(contents), file);
+                fclose(file);
             }
-            fgets(contents, sizeof(contents), file);
-            fclose(file);
+            else
+            {
+                strcpy(contents, "ACCESS DENIED");
+            }
         }
-        else
+        else if (strcmp(subcommand, "write") == 0)
         {
-            strcpy(contents, "ACCESS DENIED");
+            if (user_permission > 2) {
+                strcpy(contents, "ACCESS DENIED");
+            }
+            else
+            {
+                write_flag = true;
+            }
         }
     }
     else if (strcmp(filename, "top_secret.data") == 0)
     {
-        if (user_permission >= 3)
+        if (strcmp(subcommand, "read") == 0)
         {
-            FILE *file = fopen(filename, "r");
-            if (file == NULL)
+            if (user_permission >= 3)
             {
-                // perror("Error opening top_secret.data");
-                exit(1);
+                FILE *file = fopen(filename, "r");
+                if (file == NULL)
+                {
+                    // perror("Error opening top_secret.data");
+                    exit(1);
+                }
+                char* content = fgets(contents, sizeof(contents), file);
+                printf("%s\n", content);
+                fclose(file);
             }
-            char* content = fgets(contents, sizeof(contents), file);
-            printf("%s\n", content);
-            fclose(file);
+            else
+            {
+                strcpy(contents, "ACCESS DENIED");
+            }
         }
-        else
+        else if (strcmp(subcommand, "write") == 0)
         {
-            strcpy(contents, "ACCESS DENIED");
+            if (user_permission > 3) {
+                strcpy(contents, "ACCESS DENIED");
+            }
+            else
+            {
+                write_flag = true;
+            }
         }
     }
     else
@@ -207,7 +264,10 @@ int main(int argc, char *argv[])
     dprintf(log_file, "%s %s\n", subcommand, filename);
     close(log_file);
 
-    printf("%s\n", contents);
+    if (!write_flag)
+    {
+        printf("%s\n", contents);
+    }
 
     free(user_permissions);
 
